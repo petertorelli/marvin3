@@ -1,28 +1,16 @@
 /**
  * Motor Controller using a PSoC 4100S (CY8C4146LQI_S422)
  */
-/*
-todo
-get rid of floats (use cert-c substitutions)
-*/
-#define TEST_MODE__NONE    0
-#define TEST_MODE__USE_POT 1
-#define TEST_MODE__75PCT   2
-#define TEST_MODE__PRESET  3
-#define TEST_MODE TEST_MODE__NONE
-
 #include <stdlib.h>
-
 #include "cy_pdl.h"
 #include "cybsp.h"
 #include "cy_retarget_io.h"
-
 #include "pidctl.h"
 
 #define MAX_QUADDEC_VALUE 120u
 #define MAX_QUADDEC_HEADROOM (MAX_QUADDEC_VALUE + 12u)
-#define SERVO_MID_MS 1500u
-#define SERVO_HALF_MS 500u
+#define SERVO_MID_MS 1500
+#define SERVO_HALF_MS 500
 #define MAX_PWM 950u /* 95% duty cycle max */
 
 #define FAIL_TRAP(ms) { \
@@ -116,7 +104,7 @@ debug__use_direct_pot(void)
 }
 
 static void
-update_pids(pidctl_t *pid)
+update_pid(pidctl_t *pid)
 {
     int32_t count = 0;
     int32_t delta = 0;
@@ -134,16 +122,18 @@ update_pids(pidctl_t *pid)
         delta = last_count - count;
         last_count = count;
 
-        int32_t predelta = delta;
-
         /* Prevent power-on spike since delta will be -32768 */
         if (delta > 1000 || delta < -1000)
         {
-            // TODO: Fix quaddec counter wraparound (every 56.5 sec)
+            /* Prevent counter overflow since this is unsigned. */
+            /* Also supresses turn-on spike from first decoder read. */
             delta = last_delta;
         }
         last_delta = delta;
 
+        /* Note: The acc can be nonzero at the same time error is zero */
+        /* Note: This causes y to be nonzero with delta = 0 */
+        /* TODO: Don't leave PWMs running at very low values. */
         y = pidctl_compute(pid, (float)delta);
 
         if (y < 0)
@@ -151,29 +141,17 @@ update_pids(pidctl_t *pid)
             lhs = (uint32_t)(y * -1);
             rhs = 0u;
         }
-        else if (y > 0)
+        else
         {
             lhs = 0u;
             rhs = (uint32_t)y;
         }
-        else
-        {
-            lhs = 0u;
-            rhs = 0u;
-        }
-
-        /* The accumulator can be nonzero at the same time error is zero */
-
         Cy_TCPWM_PWM_SetCompare1(TCPWM, PWM_LHS_NUM, lhs);
         Cy_TCPWM_PWM_SetCompare1(TCPWM, PWM_RHS_NUM, rhs);
 
-#if 1
-        printf("%5.3f,%5.3f,%5.3f,%5.3f\r\n", (float)g_ms/1000.0f, pid->target, (float)delta, (float)predelta);
-#else
-        printf("%5.3f pid->target=%f p-err=%f p-acc=%f delta=%ld y=%f lhs=%lu rhs=%lu\r\n",
-            (float)g_ms/1000.0f, pid->target, pid->error, pid->_acc, predelta, y, lhs, rhs
-        );
-#endif
+        printf("%5.3f,%5.3f,%5.3f\r\n", 
+            (float)g_ms/1000.0f,
+            pid->target, (float)delta);
     }
 }
 
@@ -223,6 +201,7 @@ main(void)
     Cy_TCPWM_QuadDec_Enable(TCPWM, QUAD_DEC_NUM);
     Cy_TCPWM_TriggerReloadOrIndex(TCPWM, QUAD_DEC_MASK);
 
+    /* Default 1 msec */
     Cy_SysTick_Enable();
     Cy_SysTick_SetCallback(0UL, &SysTick_Callback);
 
@@ -249,64 +228,15 @@ main(void)
     };
     pidctl_prime(&pid);
 
-#if TEST_MODE == TEST_MODE__75PCT
-    while (1) {
-        Cy_TCPWM_PWM_SetCompare1(TCPWM, PWM_LHS_NUM, 0);
-        Cy_TCPWM_PWM_SetCompare1(TCPWM, PWM_RHS_NUM, 500);
-    }
-#endif
-
-#if  TEST_MODE == TEST_MODE__USE_POT || TEST_MODE == TEST_MODE__PRESET
-    uint32_t last_ms = 0u;
-    uint32_t dt = 0u;
-    uint32_t last_dec_cnt = 0u;
-
-    uint32_t seq[] = {
-        0,
-        20,
-        0,
-        40,
-        0,
-        60,
-        0,
-        80,
-        0,
-        100,
-        0,
-        120
-    };
-
-    int x = 0;
-    int y = 0;
-    uint32_t numseq = sizeof(seq) / sizeof(uint32_t);
-    uint32_t seqidx = 0;
-#endif
-
     while (1)
     {
-#if  TEST_MODE == TEST_MODE__USE_POT || TEST_MODE == TEST_MODE__PRESET
-        dt = g_ms - last_ms;
-#endif
-        Cy_GPIO_Inv(DBG_LED_PORT, DBG_LED_PIN);
-        /**
-         * TODO: Understand signed/unsigned conversion in math because the
-         * TODO: multiply was setting the MSB if scaled_value was < 0.
-         */
-        // All the int conversions b/c math between unsigned & signed is fraught
+        //Cy_GPIO_Inv(DBG_LED_PORT, DBG_LED_PIN);
+        // All the int conversions b/c math between unsigned & signed is ?huh?
         // BUG: Why doesn't servo count ever hit 2000 ms? Scope says it does?
         int scaled_value = (int)SERVO_MID_MS - (int)g_servo_count;
-        // Do this BEFORE the divide since were using INTs
+        // Do this BEFORE the divide since we're using INTs
         scaled_value *= (int)MAX_QUADDEC_VALUE;
         scaled_value /= (int)SERVO_HALF_MS;
-        /**
-         * TODO: Prevent hard direction change by inserting a stop first.
-         * TODO: Need to define di/dt spike that defines HARD so that
-         * TODO: we don't lose responsiveness.
-         * TODO: Why can't the PID just go negative? Quaddec is always +ve
-         * 
-         * so 1x mode is +/-ve, why didin't we use that? plus 4x mode
-         * gives us +/- 240 counts
-         */
         if (IN_DEAD_ZONE(scaled_value))
         {
             pid.target = 0.0f;
@@ -315,28 +245,6 @@ main(void)
         {
             pid.target = (float)scaled_value;
         }
-#if  TEST_MODE == TEST_MODE__USE_POT
-        debug__use_direct_pot();
-        if (dt > 100)
-        {
-            uint32_t count = Cy_TCPWM_QuadDec_GetCounter(TCPWM, QUAD_DEC_NUM);
-            int32_t delta = count - last_dec_cnt;
-            printf("Delta %ld\r\n", delta);
-            last_dec_cnt = count;
-            last_ms = g_ms;
-        }
-#else
-#if TEST_MODE == TEST_MODE__PRESET
-        if (dt > 5000)
-        {
-            last_ms = g_ms;
-            ++seqidx;
-            seqidx = seqidx % numseq;
-        }
-        pid.target = (float)seq[seqidx];
-#endif
-        update_pids(&pid);
-#endif
-/* 22 ~ 24 usec loop (w/pid update), w/o printf*/
+        update_pid(&pid);
     }
 }
