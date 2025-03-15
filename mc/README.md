@@ -10,6 +10,10 @@ It uses an Infineon PSoC4 MCU, Infineon 140W NFETS, and Infineon IR2184 half-bri
 
 The schematic was drawn in KiCad and hand routed so that the high-current path has priority. I could have compacted it more, but with only two layers I had to make sure no MCU traces crossed the high-current return path on the bottom layer. So I put the MCU and its logic on the other side of the board, thus the XT30 power supply jumper RIGHT IN THE MIDDLE OF THE LAYOUT. I also used double-weight copper (0.2 oz) so that if it does stall at 9 A there's plenty of headroom.
 
+I'm pleased with the progression from layout, to 3D rendering (I put way too much work into finding 3D models), and the actual board. Here is composite:
+
+<a href="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png"><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png" width="25%" /></a>
+
 # To Do
 
 1. I'm a little concerned about the 33 Ohm gate resistors because it appears they are carrying 12V, which leads to (12*12)/33 = 4 Watts, at 95% duty cycle. THey should have smoked off the board but they aren't even hot so I must have measured incorrectly.
