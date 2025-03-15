@@ -12,12 +12,24 @@ The schematic was drawn in KiCad and hand routed so that the high-current path h
 
 I'm pleased with the progression from layout, to 3D rendering (I put way too much work into finding 3D models), and the actual board. Here is composite:
 
-<a href="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png"><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png" width="25%" /></a>
+<a href="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png"><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png" width="320px" /></a>
 
 # To Do
 
-1. I'm a little concerned about the 33 Ohm gate resistors because it appears they are carrying 12V, which leads to (12*12)/33 = 4 Watts, at 95% duty cycle. THey should have smoked off the board but they aren't even hot so I must have measured incorrectly.
+1. The gate resistors are rated for 1/10th of a Watt, but they only carry transients at +/- 9 V (due to bootstrap):
 
-2. The PID is set to 50 ms updates, and with 4x from the quadrature decoder I get 2400 pulses per second at full speed, or 120 per 50 ms. Seems to be working ok.
+<img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/voltage-across-33R.png" width="320px" />
 
-3. 48 MHz is probably a bit overpowered, as the main loop takes 6.3 µs when not updating the pid, and 9.3 µs when updating (reading the QUADDEC and a `printf`). Since this  outpaces the update speed of the PID at 50 ms I could have used an even smaller version of the PSoC4. Note that a `while(1)` loop with just a GPIO toggle takes 340 ns.
+2. I tried increasing them to 100 Ohms and the slopes got worse, but the supply current increased significanlty. I wasn't expecting it to be so sensitive. I tried running without resistors and cooked several IR2184s (I know, the schematic indicates a resistor, just wanted to try).
+
+33 Ohm slope vs 100 Ohm slope = 52 to 390 µs difference. Even if I moved the cursors to the 20%/80% slope points it still much more than expected.
+
+<img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/gate-res-33R.png" width="320px" /><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/gate-res-100R.png" width="320px" />
+
+4. I didn't need a fast-shutoff diode because 24 KHz is slow enough and I didn't want to cramp the layout, and it didn't make much difference. Here are with (left) and without (right):
+
+<img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/with-gate-diode.png" width="320px" /><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/without-gate-diode.png" width="320px" />
+
+6. The PID is set to 50 ms updates, and with 4x from the quadrature decoder I get 2400 pulses per second at full speed, or 120 per 50 ms. Seems to be working ok.
+
+7. 48 MHz is probably a bit overpowered, as the main loop takes 6.3 µs when not updating the pid, and 9.3 µs when updating (reading the QUADDEC and a `printf`). Since this  outpaces the update speed of the PID at 50 ms I could have used an even smaller version of the PSoC4. Note that a `while(1)` loop with just a GPIO toggle takes 340 ns.
