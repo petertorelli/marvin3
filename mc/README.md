@@ -12,7 +12,7 @@ The schematic was drawn in KiCad and hand routed so that the high-current path h
 
 I'm pleased with the progression from layout, to 3D rendering (I put way too much work into finding 3D models), and the actual board. Here is composite:
 
-<a href="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png"><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png" width="320px" /></a>
+<img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-3stages.png" width="320px" />
 
 # To Do
 
@@ -31,5 +31,9 @@ I'm pleased with the progression from layout, to 3D rendering (I put way too muc
 <img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/with-gate-diode.png" width="320px" /><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/without-gate-diode.png" width="320px" />
 
 6. The PID is set to 50 ms updates, and with 4x from the quadrature decoder I get 2400 pulses per second at full speed, or 120 per 50 ms. Seems to be working ok.
+
+Here is the step function response and follow-response charts:
+
+<img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/step-function.png" width="320px"><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/follow-response.png" width="320px">
 
 7. 48 MHz is probably a bit overpowered, as the main loop takes 6.3 µs when not updating the pid, and 9.3 µs when updating (reading the QUADDEC and a `printf`). Since this  outpaces the update speed of the PID at 50 ms I could have used an even smaller version of the PSoC4. Note that a `while(1)` loop with just a GPIO toggle takes 340 ns.
