@@ -1,0 +1,6 @@
+.DS_Store
+mc/code/mtb_shared
+mc/kicad/*backups/*
+mc/code/build/*
+mc/mtb_shared
+mc/code/.ninja_log
