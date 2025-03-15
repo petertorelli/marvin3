@@ -1,0 +1,37 @@
+{
+    "version": 4,
+    "env": {
+        "mtbCompilerArgs": [
+            "-c","-mcpu=cortex-m0plus","--specs=nano.specs","-Og","-mthumb","-ffunction-sections","-fdata-sections","-ffat-lto-objects","-g","-Wall","-pipe"
+        ],
+        "mtbDefaultIncludePath": [
+            ".","bsps/TARGET_PETEOMATIC","bsps","bsps/TARGET_PETEOMATIC/config/GeneratedSource","bsps/TARGET_PETEOMATIC/config","../mtb_shared/retarget-io/release-v1.7.0/include","../mtb_shared/retarget-io/release-v1.7.0","../mtb_shared/cmsis/release-v5.8.0/Core/Include","../mtb_shared/cmsis/release-v5.8.0/Core","../mtb_shared/cmsis/release-v5.8.0","../mtb_shared/core-lib/release-v1.4.3/include","../mtb_shared/core-lib/release-v1.4.3","../mtb_shared/mtb-pdl-cat2/release-v2.14.0/devices/include","../mtb_shared/mtb-pdl-cat2/release-v2.14.0/devices","../mtb_shared/mtb-pdl-cat2/release-v2.14.0","../mtb_shared/mtb-pdl-cat2/release-v2.14.0/devices/include/ip","../mtb_shared/mtb-pdl-cat2/release-v2.14.0/drivers/include","../mtb_shared/mtb-pdl-cat2/release-v2.14.0/drivers"
+        ],
+        "mtbDefaultDefines": [
+            "COMPONENT_CAT2","COMPONENT_CM0P","COMPONENT_CM0P_0","COMPONENT_Debug","COMPONENT_GCC_ARM","COMPONENT_MW_CMSIS","COMPONENT_MW_CORE_LIB","COMPONENT_MW_CORE_MAKE","COMPONENT_MW_MTB_PDL_CAT2","COMPONENT_MW_RECIPE_MAKE_CAT2","COMPONENT_MW_RETARGET_IO","COMPONENT_PETEOMATIC","COMPONENT_PSOC4100S","COMPONENT_SOFTFP","CORE_NAME_CM0P_0=1","CY8C4146LQI_S422","CY_APPNAME_mc","CY_SUPPORTS_DEVICE_VALIDATION","CY_TARGET_BOARD=PETEOMATIC","DEBUG","TARGET_PETEOMATIC"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "MTB",
+            "compilerPath": "/Applications/ModusToolbox/tools_3.4/gcc/bin/arm-none-eabi-gcc",
+            "compilerArgs": [
+                "${mtbCompilerArgs}"
+            ],
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "intelliSenseMode": "gcc-arm",
+            "cStandard": "c99",
+            "cppStandard": "c++11",
+            "includePath": [
+                "${mtbDefaultIncludePath}"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "defines": [
+                "${mtbDefaultDefines}"
+            ]
+        }
+    ]
+}
