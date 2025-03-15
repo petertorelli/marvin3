@@ -752,11 +752,11 @@
                 </Net>
                 <Net>
                     <Port name="ioss[0].port[1].pin[2].digital_in[0]"/>
-                    <Port name="tcpwm[0].cnt[0].count[0]"/>
+                    <Port name="tcpwm[0].cnt[0].start[0]"/>
                 </Net>
                 <Net>
                     <Port name="ioss[0].port[1].pin[3].digital_in[0]"/>
-                    <Port name="tcpwm[0].cnt[0].start[0]"/>
+                    <Port name="tcpwm[0].cnt[0].count[0]"/>
                 </Net>
                 <Net>
                     <Port name="ioss[0].port[2].pin[0].digital_out[0]"/>

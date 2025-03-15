@@ -117,11 +117,13 @@ update_pid(pidctl_t *pid)
 
     if (pidctl_needs_update(pid))
     {
+        /* Key learning: If phi-A/B lines are swapped, it recives 
+           opposite sign count and the pid fails. */
         count = Cy_TCPWM_QuadDec_GetCounter(TCPWM, QUAD_DEC_NUM);
         /* Key learning: make sure count sign matches PID sign! */
         delta = last_count - count;
         last_count = count;
-
+        int32_t predelt = delta;
         /* Prevent power-on spike since delta will be -32768 */
         if (delta > 1000 || delta < -1000)
         {
@@ -149,9 +151,9 @@ update_pid(pidctl_t *pid)
         Cy_TCPWM_PWM_SetCompare1(TCPWM, PWM_LHS_NUM, lhs);
         Cy_TCPWM_PWM_SetCompare1(TCPWM, PWM_RHS_NUM, rhs);
 
-        printf("%5.3f,%5.3f,%5.3f\r\n", 
+        printf("%5.3f,%5.3f,pre %5.3f,post %5.3f\r\n", 
             (float)g_ms/1000.0f,
-            pid->target, (float)delta);
+            pid->target, (float)predelt, (float)delta);
     }
 }
 
@@ -163,6 +165,18 @@ servo_width_isr(void)
     /* Key learning: latch the value in the ISR, don't read later! */
     g_servo_count = Cy_TCPWM_Counter_GetCounter(TCPWM, SERVO_DEC_NUM);
     Cy_TCPWM_ClearInterrupt(SERVO_DEC_HW, SERVO_DEC_NUM, cause);
+}
+
+static
+void run_svt(void)
+{
+    printf("Hello world\r\n");
+    //FAIL_TRAP(250);
+    while (1) {
+        Cy_TCPWM_PWM_SetCompare1(TCPWM, PWM_LHS_NUM, 500);
+        Cy_TCPWM_PWM_SetCompare1(TCPWM, PWM_RHS_NUM, 0);
+    }
+    FAIL_TRAP(250);
 }
 
 int
@@ -227,6 +241,8 @@ main(void)
         .period_ms = 50
     };
     pidctl_prime(&pid);
+
+    //run_svt();    
 
     while (1)
     {
