@@ -16,9 +16,7 @@ I'm pleased with the progression from layout, to 3D rendering (I put way too muc
 
 # To Do
 
-1. The gate resistors are rated for 1/10th of a Watt, but they only carry transients at +/- 9 V (due to bootstrap):
-
-<img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/voltage-across-33R.png" width="320px" />
+1. The gate resistors are rated for 1/10th of a Watt, so I'm a little concerned they are gonna go \*poof\* at some point but they don't even get warm. My test circuit at 250 mW lasted for hours at 95% duty cycle so I must be miscalculating something. A 12 V drop should have fried them by now.
 
 2. I tried increasing them to 100 Ohms and the slopes got worse, but the supply current increased significanlty. I wasn't expecting it to be so sensitive. I tried running without resistors and cooked several IR2184s (I know, the schematic indicates a resistor, just wanted to try).
 
