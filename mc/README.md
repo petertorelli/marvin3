@@ -2,6 +2,8 @@
 
 This is a brushed-DC, PID controlled, motor-controller designed to work with [GoBilda Yellowjack motors](https://www.gobilda.com/yellow-jacket-planetary-gear-motors). GoBilda makes a controller, but it doesn't use the decoder circuit. For me, this is part of a larger project and I need to know if wheels are stalled so that the MC can provide more current.
 
+<img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/mc-1.0-sch.png" width="320px" />
+
 Output is 24 KHz PWM wave from zero to 95% duty cycle. The input is a standard servo controller 500~1500 ms at 50 Hz. It requires 12 VDC input, and supplies 5 V to the controller, motor decoder, and servo (which usually doesn't need it).
 
 The PID is tuned to avoid overshoot spikes at a step function input, but I haven't tested the settings with all six motors running. Probably later this summer.
