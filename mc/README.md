@@ -38,4 +38,4 @@ Here is the step function response and follow-response charts:
 
 <img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/step-function.png" width="320px"><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/follow-response.png" width="320px">
 
-7. 48 MHz is probably a bit overpowered, as the main loop takes 6.3 µs when not updating the pid, and 9.3 µs when updating (reading the QUADDEC and a `printf`). Since this  outpaces the update speed of the PID at 50 ms I could have used an even smaller version of the PSoC4. Note that a `while(1)` loop with just a GPIO toggle takes 340 ns.
+7. 48 MHz is probably a bit overpowered, as the main loop takes 6.3 µs when not updating the pid, and 9.3 µs when updating (reading the QUADDEC and a `printf`). Since this  outpaces the update speed of the PID at 50 ms I could have used an even smaller & slower version of the PSoC4 if they had enough PWMs. Note that a `while(1)` loop with just a GPIO toggle takes 340 ns. Turns out there's now a 12V version of PSOC4 so I could also ditch the linear regulator if there's a package match. (Should probably use an OPTIREG regulator so I can be 100% Infineon.)
