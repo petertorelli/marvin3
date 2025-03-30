@@ -18,9 +18,11 @@ I'm pleased with the progression from layout, to 3D rendering (I put way too muc
 
 # To Do
 
-1. The gate resistors are rated for 1/10th of a Watt, so I'm a little concerned they are gonna go \*poof\* at some point but they don't even get warm. My test circuit at 250 mW lasted for hours at 95% duty cycle so I must be miscalculating something. A 12 V drop should have fried them by now.
+1. The gate resistors are rated for 1/10th of a Watt, so I'm a little concerned they are gonna go \*poof\* at some point. I realize once the gate charges up there's miniscule voltage drop, but even the width of the peaks (shown below) should be out of spec, and nothing is even getting warm. So I'm probably misunderstand the electrical characteristics. (If you have any ideas, drop me a comment.)
 
-2. I tried increasing them to 100 Ohms and the slopes got worse, but the supply current increased significanlty. I wasn't expecting it to be so sensitive. I tried running without resistors and cooked several IR2184s (I know, the schematic indicates a resistor, just wanted to try).
+<img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/gate-res-33R.png" width="320px" /><img src="https://github.com/petertorelli/marvin3/blob/main/mc/images/voltage-across-33R.png" width="320px" />
+
+3. I tried increasing the gate resistors to 100 Ohms and the slopes got worse, but the supply current increased significanlty. I wasn't expecting it to be so sensitive. I tried running without resistors and cooked several IR2184s (I know, the schematic indicates a resistor, just wanted to try).
 
 33 Ohm slope vs 100 Ohm slope = 52 to 390 µs difference. Even if I moved the cursors to the 20%/80% slope points it still much more than expected.
 
